@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+
+
+ <div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">event_name</th>
+                <th scope="col">event_date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for vacancy in vacancies %}
+            <tr >
+                <td> {{vacancy.event_name}} </td>
+                <td> {{vacancy.event_date}} </td>
+
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+ </div>
+
+{% endblock %}
