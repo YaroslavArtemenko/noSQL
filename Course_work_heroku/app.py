@@ -32,7 +32,7 @@ import psycopg2
 app = Flask(__name__)
 app.secret_key = 'key'
 
-ENV = 'prod'
+ENV = 'dev'
 
 if ENV == 'dev':
     app.debug = True
@@ -40,7 +40,7 @@ if ENV == 'dev':
 else:
     app.debug = False
     app.config['SECRET_KEY'] = 'laba2artemenko'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://jrynjwylmbnfri:44bc06f7bd5bc84e25dcef0536445d98a2526f260454f16b7148bce9d0b8dbca@ec2-174-129-32-212.compute-1.amazonaws.com:5432/d828p0rcrgqb1f'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://owcpwqpvgzcmxu:04749c59af1eaa222912276d7241efabbf893db35a91eccd3b0b7fe8bd54045c@ec2-107-21-214-222.compute-1.amazonaws.com:5432/d3u9j9tfd6imib'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -111,13 +111,13 @@ class Country(db.Model):
 db.create_all()
 
 #очистка всех таблиц
-# db.session.query(CountyHasPlace).delete()
-# db.session.query(Country).delete()
-# db.session.query(association).delete()
-# db.session.query(Contest).delete()
-# db.session.query(Event).delete()
-# db.session.query(People).delete()
-# db.session.query(Place).delete()
+db.session.query(CountyHasPlace).delete()
+db.session.query(Country).delete()
+db.session.query(association).delete()
+db.session.query(Contest).delete()
+db.session.query(Event).delete()
+db.session.query(People).delete()
+db.session.query(Place).delete()
 
 
 #создане объектов
@@ -397,14 +397,18 @@ def registration():
     form = RegistrationForm()
     if request.method == 'POST':
         if form.validate():
-            new_people = People(
-                people_email=form.people_email.data,
-                people_password=form.people_confirm_password.data
-            )
-            db.session.add(new_people)
-            db.session.commit()
-            newSession(new_people.people_email, new_people.people_password)
-            return render_template('success.html')
+            try:
+                new_people = People(
+                    people_email=form.people_email.data,
+                    people_password=form.people_confirm_password.data
+                )
+                db.session.add(new_people)
+                db.session.commit()
+                newSession(new_people.people_email, new_people.people_password)
+                return render_template('success.html')
+            except:
+                form.people_email.errors = ['this user is registered']
+                return render_template('registration.html', form=form)
         else:
             return render_template('registration.html', form=form)
 
@@ -942,7 +946,7 @@ def clasification():
     pnn = algorithms.PNN(std=10, verbose=False)
 
     pnn.train(X, df['quality'])
-    test_str = ['club', 'Ковальський провулок']
+    test_str = ['museum', 'Ковальський провулок']
     count_columns = len(X.columns)
     test_list = np.array([0] * count_columns)
     test_list[0] = 1
@@ -974,5 +978,5 @@ def search():
 
 
 if __name__ == "__main__":
-    app.debug = True
+    # app.debug = True
     app.run()
